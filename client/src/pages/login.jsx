@@ -1,8 +1,9 @@
-import React ,{ useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
-
+import React, { useState } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext'; // Make sure useAuth is imported
 
 const Login = () => {
+    const { login } = useAuth(); // Get the login function from your context
     const location = useLocation();
     const navigate = useNavigate();
     const [state, setState] = useState(location.state?.formType || "login");
@@ -12,7 +13,6 @@ const Login = () => {
         password: ""
     });
     const [loading, setLoading] = useState(false);
-    const [googleLoading, setGoogleLoading] = useState(false);
     const [errors, setErrors] = useState({});
     const [authError, setAuthError] = useState(null);
 
@@ -22,47 +22,53 @@ const Login = () => {
             ...prev,
             [name]: value
         }));
-        // Clear error when user starts typing
         if (errors[name]) {
             setErrors(prev => ({ ...prev, [name]: null }));
         }
         if (authError) setAuthError(null);
     };
-    
 
     const validateForm = () => {
         const newErrors = {};
         if (!formData.email.trim()) newErrors.email = "Email is required";
         else if (!/^\S+@\S+\.\S+$/.test(formData.email)) newErrors.email = "Invalid email format";
-        
+
         if (!formData.password) newErrors.password = "Password is required";
         else if (formData.password.length < 6) newErrors.password = "Password must be at least 6 characters";
-        
+
         if (state === "register" && !formData.name.trim()) newErrors.name = "Name is required";
-        
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
+    // --- THIS FUNCTION IS NOW FIXED ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         if (!validateForm()) return;
-        
+
         setLoading(true);
         setAuthError(null);
-        
-        try {
-            // Simulate API call
-            const response = await mockAuthApi(state, formData);
-            
-            if (response.success) {
-                // Store auth token or user data
-                localStorage.setItem('authToken', response.token);
-                // Redirect to home or dashboard
-                navigate('/', { state: { loggedIn: true } });
 
+        const endpoint = state === 'login' ? 'login' : 'register';
+        const url = `http://localhost:5000/auth/${endpoint}`;
+
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(formData),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // This will now be called for both login AND successful sign-up
+                login(data.token); 
             } else {
-                setAuthError(response.message || "Authentication failed");
+                setAuthError(data.message || "Authentication failed");
             }
         } catch (error) {
             setAuthError("An error occurred. Please try again.");
@@ -71,33 +77,13 @@ const Login = () => {
             setLoading(false);
         }
     };
-
-    // Mock API function
-    const mockAuthApi = (action, data) => {
-        return new Promise(resolve => {
-            setTimeout(() => {
-                if (action === "login") {
-                    resolve({
-                        success: true,
-                        token: "mock-jwt-token",
-                        user: { email: data.email }
-                    });
-                } else {
-                    resolve({
-                        success: true,
-                        token: "mock-jwt-token",
-                        user: { ...data }
-                    });
-                }
-            }, 1500);
-        });
-    };
-
+    
     const toggleFormType = () => {
         setState(prev => prev === "login" ? "register" : "login");
         setErrors({});
         setAuthError(null);
     };
+
     return (
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 to-indigo-100 p-4">
             <form 
@@ -107,6 +93,8 @@ const Login = () => {
                 <h2 className="text-3xl font-bold text-center mb-4">
                     <span className="text-indigo-600">User</span> {state === "login" ? "Login" : "Sign Up"}
                 </h2>
+                
+                {authError && <p className="text-red-500 text-sm text-center bg-red-100 p-2 rounded-md">{authError}</p>}
 
                 {state === "register" && (
                     <div className="w-full">
@@ -158,24 +146,24 @@ const Login = () => {
                 <button
                     type="submit"
                     disabled={loading}
-                    className={`w-full py-3 px-4 rounded-lg text-white font-medium mt-2 transition-colors ${
-                        loading 
-                            ? 'bg-indigo-400 cursor-not-allowed' 
-                            : 'bg-indigo-600 hover:bg-indigo-700'
-                    }`}
+                    className={`w-full py-3 px-4 rounded-lg text-white font-medium mt-2 transition-colors ${loading ? 'bg-indigo-400 cursor-not-allowed' : 'bg-indigo-600 hover:bg-indigo-700'}`}
                 >
-                    {loading ? (
-                        <span className="flex items-center justify-center">
-                            <svg className="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-                            </svg>
-                            Processing...
-                        </span>
-                    ) : (
-                        state === "register" ? "Create Account" : "Login"
-                    )}
+                    {loading ? "Processing..." : (state === "register" ? "Create Account" : "Login")}
                 </button>
+                
+                <div className="my-4 flex items-center">
+                    <div className="flex-grow border-t border-gray-300"></div>
+                    <span className="flex-shrink mx-4 text-gray-500">OR</span>
+                    <div className="flex-grow border-t border-gray-300"></div>
+                </div>
+
+                <a 
+                    href="http://localhost:5000/auth/google"
+                    className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-lg border border-gray-300 bg-white text-gray-700 font-medium hover:bg-gray-50 transition-colors"
+                >
+                    <img src="https://www.google.com/favicon.ico" alt="Google icon" className="w-5 h-5" />
+                    Continue with Google
+                </a>
 
                 <p className="text-center text-sm text-gray-600 mt-2">
                     {state === "register" 
@@ -183,10 +171,7 @@ const Login = () => {
                         : "Don't have an account? "}
                     <button
                         type="button"
-                        onClick={() => {
-                            setState(state === "login" ? "register" : "login");
-                            setErrors({});
-                        }}
+                        onClick={toggleFormType}
                         className="text-indigo-600 hover:text-indigo-800 font-medium focus:outline-none"
                     >
                         {state === "register" ? "Login" : "Sign Up"}

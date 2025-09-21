@@ -1,12 +1,26 @@
 import React, { useEffect, useState } from 'react';
-import { useNavigate, useLocation } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import Footer from "../assets/components/Footer";
-import { Link } from "react-router-dom";
+import { useAuth } from '../context/AuthContext'; // 1. Import the useAuth hook
 
 export default function Home() {
   const navigate = useNavigate();
   const [gradientPos, setGradientPos] = useState({ x: 50, y: 50 });
+
+  // 2. Get the real authentication state from the context
+  const { authToken, user, logout } = useAuth();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   
+  // This helper function creates initials from the user's name
+  const getInitials = (name) => {
+    if (!name) return '';
+    const nameParts = name.split(' ');
+    if (nameParts.length > 1) {
+      return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
+    }
+    return name[0].toUpperCase();
+  };
+
   useEffect(() => {
     const handleMouseMove = (e) => {
       const { clientX, clientY } = e;
@@ -20,21 +34,13 @@ export default function Home() {
   }, []);
 
   const [notificationCount, setNotificationCount] = useState(1);
-  const location = useLocation();
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  useEffect(() => {
-    if (location.state?.loggedIn) {
-      setIsLoggedIn(true);
-    }
-  }, [location.state]);
-
-  // Function to handle navigation with login check
-  const handleNavigate = (path, requiresLogin = false) => {
-    if (requiresLogin && !isLoggedIn) {
+  
+  // Function to handle navigation with a login check
+  const handleNavigate = (path) => {
+    // Use the real authToken to check if the user is logged in
+    if (!authToken) {
       navigate('/login', { 
         state: { 
-          formType: 'login',
           message: 'Please log in to access this feature',
           redirectTo: path
         } 
@@ -46,49 +52,8 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
-      {/* Navbar */}
-      <nav className="flex items-center justify-between px-6 py-4 bg-white shadow-md">
-        {/* Left: Logo and Links */}
-        <div className="flex items-center gap-8">
-          <div className="flex items-center gap-1 text-xl font-bold">
-            <div className="w-6 h-6 bg-blue-600 text-white rounded-full flex items-center justify-center text-sm">↗</div>
-            <span className="text-blue-700">Hustle</span>
-            <span className="text-orange-500">Hub</span>
-          </div>
-          <div className="hidden md:flex items-center gap-6 text-gray-700 text-sm font-medium">
-            <Link to="/prepare" className="hover:text-blue-600">Prepare</Link>
-            <Link to="/participate" className="hover:text-blue-600">Participate</Link>
-            <Link to="/oppurtunities" className="hover:text-blue-600">Oppurtunities</Link>
-          </div>
-        </div>
-        
-        {/* Right: Conditional Content */}
-        <div className="flex items-center gap-4">
-          {!isLoggedIn ? (
-            <button 
-              onClick={() => navigate('/login', { state: { formType: 'register' } })} 
-              className="bg-blue-600 text-white px-6 py-2 rounded-full font-semibold hover:bg-blue-700 transition duration-300"
-            >
-              Sign Up
-            </button>
-          ) : (
-            <>
-              <button className="relative">
-                <span className="text-gray-600 text-xl">🔔</span>
-                {notificationCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-red-600 text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
-                    {notificationCount}
-                  </span>
-                )}
-              </button>
-              <div className="relative flex items-center px-4 py-2 bg-gray-100 rounded-full cursor-pointer">
-                <span className="text-sm mr-2">☰</span>
-                <span className="text-gray-700">👤</span>
-              </div>
-            </>
-          )}
-        </div>
-      </nav>
+      {/* Navbar with Integrated Auth Logic */}
+      
 
       {/* Animated Gradient Hero Section */}
       <section 
@@ -106,7 +71,6 @@ export default function Home() {
             Connecting talented people with the best freelance opportunities
           </p>
           
-          {/* Enhanced Job Search Bar */}
           <div className="max-w-2xl mx-auto bg-white/20 backdrop-blur-sm rounded-xl overflow-hidden shadow-2xl animate-fade-in-up delay-200">
             <div className="flex">
               <input 
@@ -125,13 +89,13 @@ export default function Home() {
           
           <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center animate-fade-in-up delay-300">
             <button 
-              onClick={() => handleNavigate('/resume-upload', true)} 
+              onClick={() => handleNavigate('/resume-upload')} 
               className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-3 rounded-xl shadow-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-102"
             >
               Upload Resume
             </button>
             <button 
-              onClick={() => handleNavigate('/post-gig', true)} 
+              onClick={() => handleNavigate('/post-gig')} 
               className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-3 rounded-xl shadow-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-102"
             >
               Post a Gig Opportunity
@@ -161,11 +125,10 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Employer/Candidate Info with Gradient Borders */}
+      {/* Employer/Candidate Info */}
       <section className="py-16 bg-gradient-to-br from-indigo-50 to-indigo-100">
         <div className="container mx-auto px-4">
           <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-            {/* For Employers */}
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
               <div className="relative bg-white rounded-xl p-8 shadow-xl h-full">
@@ -176,7 +139,7 @@ export default function Home() {
                   Find the best talent effortlessly. Post gigs, manage applications, and hire faster with our smart recruitment tools designed for the modern workforce.
                 </p>
                 <button 
-                  onClick={() => handleNavigate('/post-gig', true)} 
+                  onClick={() => handleNavigate('/post-gig')} 
                   className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
                 >
                   Post a Gig
@@ -184,7 +147,6 @@ export default function Home() {
               </div>
             </div>
 
-            {/* For Candidates */}
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-amber-500 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
               <div className="relative bg-white rounded-xl p-8 shadow-xl h-full">
@@ -195,7 +157,7 @@ export default function Home() {
                   Explore thousands of gigs, create your profile and get personalized recommendations. We match you with opportunities that fit your skills and goals.
                 </p>
                 <button 
-                  onClick={() => handleNavigate('/resume-upload', true)} 
+                  onClick={() => handleNavigate('/resume-upload')} 
                   className="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-6 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
                 >
                   Upload Resume
@@ -208,7 +170,7 @@ export default function Home() {
 
       {/* Conditional CTA/Footer Section */}
       <div className="mt-auto">
-        {!isLoggedIn ? (
+        {!authToken ? (
           <section className="py-20 bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
             <div className="container mx-auto px-4 text-center">
               <h2 className="text-3xl md:text-4xl font-bold mb-6">Ready to Transform Your Career?</h2>
@@ -236,7 +198,7 @@ export default function Home() {
   );
 }
 
-// Enhanced Category Card with Gradient Background
+// Category Card Component
 function CategoryCard({ icon, label, color, bgColor }) {
   return (
     <div className={`group relative overflow-hidden rounded-xl shadow-md hover:shadow-xl transition-all duration-300 transform hover:-translate-y-2 ${bgColor}`}>
