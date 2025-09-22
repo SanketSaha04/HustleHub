@@ -13,6 +13,7 @@ import Gigs from './pages/admin/Gigs';
 import Navbar from './components/Navbar'; 
 import AuthCallback from './components/AuthCallback';
 import { useAuth } from './context/AuthContext';
+import PortfolioBuilder from './pages/PortfolioBuilder'; 
 
 
 function App() {
@@ -51,6 +52,9 @@ function App() {
           <Route path="/profile-create" element={<ProfileCreate/>} />
           <Route path="/interview-prep" element={<InterviewPrep/>} />
           <Route path="/admin/gigs" element={<Gigs />} />
+          <Route path="/portfolio-builder" element={<PortfolioBuilder />} />
+                  
+                
         </Routes>
       </main>
     </div>

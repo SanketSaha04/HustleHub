@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 const ProfileIcon = () => {
     const { authToken, user, logout } = useAuth();
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
     const navigate = useNavigate();
+
+    // THIS IS THE MOST IMPORTANT LOG
+    console.log('%cProfileIcon rendering. User object is:', 'color: red; font-weight: bold;', user);
 
     const getInitials = (name) => {
         if (!name) return '';
@@ -17,9 +20,7 @@ const ProfileIcon = () => {
     };
 
     return (
-        // This container holds the auth state and positions it.
-        // The "right-4" class gives it space from the edge.
-        <div className="absolute top-4 right-4 z-50"> 
+        <div className="absolute top-4 right-4 z-50">
             {authToken && user ? (
                 <div className="relative">
                     <button
@@ -35,6 +36,25 @@ const ProfileIcon = () => {
                                 <p className="text-sm font-semibold text-gray-800">{user.name}</p>
                                 <p className="text-xs text-gray-500 truncate">{user.email}</p>
                             </div>
+
+                            {user.resumePath && (
+                                <a
+                                    href={`http://localhost:5000${user.resumePath}`}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white"
+                                >
+                                    My Resume
+                                </a>
+                            )}
+
+                            <Link
+                                to="/upload-resume"
+                                className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white"
+                            >
+                                Update Profile
+                            </Link>
+
                             <button
                                 onClick={logout}
                                 className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-indigo-500 hover:text-white"

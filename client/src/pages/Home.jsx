@@ -1,25 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import Footer from "../assets/components/Footer";
-import { useAuth } from '../context/AuthContext'; // 1. Import the useAuth hook
+import { useAuth } from '../context/AuthContext'; 
 
 export default function Home() {
   const navigate = useNavigate();
   const [gradientPos, setGradientPos] = useState({ x: 50, y: 50 });
-
-  // 2. Get the real authentication state from the context
-  const { authToken, user, logout } = useAuth();
-  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
-  
-  // This helper function creates initials from the user's name
-  const getInitials = (name) => {
-    if (!name) return '';
-    const nameParts = name.split(' ');
-    if (nameParts.length > 1) {
-      return `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase();
-    }
-    return name[0].toUpperCase();
-  };
+  const { authToken } = useAuth();
 
   useEffect(() => {
     const handleMouseMove = (e) => {
@@ -32,12 +19,8 @@ export default function Home() {
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
-
-  const [notificationCount, setNotificationCount] = useState(1);
   
-  // Function to handle navigation with a login check
   const handleNavigate = (path) => {
-    // Use the real authToken to check if the user is logged in
     if (!authToken) {
       navigate('/login', { 
         state: { 
@@ -52,9 +35,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50 overflow-x-hidden">
-      {/* Navbar with Integrated Auth Logic */}
-      
-
       {/* Animated Gradient Hero Section */}
       <section 
         className="py-20 text-white text-center relative overflow-hidden" 
@@ -80,7 +60,7 @@ export default function Home() {
               />
               <button 
                 className="bg-gradient-to-r from-amber-400 to-amber-500 px-8 text-white font-semibold hover:from-amber-500 hover:to-amber-600 transition-all duration-300 transform hover:scale-105"
-                onClick={() => navigate('/oppurtunities')}
+                onClick={() => navigate('/opportunities')}
               >
                 Search Opportunities
               </button>
@@ -94,17 +74,18 @@ export default function Home() {
             >
               Upload Resume
             </button>
+            {/* --- THIS BUTTON'S CLASSNAME HAS BEEN CHANGED --- */}
             <button 
-              onClick={() => handleNavigate('/post-gig')} 
+              onClick={() => handleNavigate('/interview-prep')} 
               className="bg-gradient-to-r from-indigo-500 to-purple-500 text-white px-8 py-3 rounded-xl shadow-lg hover:from-indigo-600 hover:to-purple-600 transition-all duration-300 transform hover:scale-102"
             >
-              Post a Gig Opportunity
+              Practice for Interviews
             </button>
           </div>
         </div>
       </section>
 
-      {/* Popular Categories with Hover Effects */}
+      {/* Popular Categories */}
       <section className="py-16 bg-gradient-to-br from-indigo-50 to-indigo-100">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12 text-gray-800 relative">
@@ -125,42 +106,24 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Employer/Candidate Info */}
+      {/* Ace Your Interview Section */}
       <section className="py-16 bg-gradient-to-br from-indigo-50 to-indigo-100">
         <div className="container mx-auto px-4">
-          <div className="max-w-6xl mx-auto grid md:grid-cols-2 gap-8">
-            <div className="relative group">
-              <div className="absolute -inset-1 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
-              <div className="relative bg-white rounded-xl p-8 shadow-xl h-full">
-                <h3 className="font-bold text-2xl mb-4 text-transparent bg-clip-text bg-gradient-to-r from-blue-500 to-indigo-600">
-                  For Employers
-                </h3>
-                <p className="mb-6 text-gray-600 leading-relaxed">
-                  Find the best talent effortlessly. Post gigs, manage applications, and hire faster with our smart recruitment tools designed for the modern workforce.
-                </p>
-                <button 
-                  onClick={() => handleNavigate('/post-gig')} 
-                  className="bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-6 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
-                >
-                  Post a Gig
-                </button>
-              </div>
-            </div>
-
+          <div className="max-w-4xl mx-auto text-center">
             <div className="relative group">
               <div className="absolute -inset-1 bg-gradient-to-r from-amber-400 to-amber-500 rounded-xl blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
-              <div className="relative bg-white rounded-xl p-8 shadow-xl h-full">
+              <div className="relative bg-white rounded-xl p-8 shadow-xl">
                 <h3 className="font-bold text-2xl mb-4 text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-500">
-                  For Gig Seekers
+                  Ready to Ace Your Interview?
                 </h3>
                 <p className="mb-6 text-gray-600 leading-relaxed">
-                  Explore thousands of gigs, create your profile and get personalized recommendations. We match you with opportunities that fit your skills and goals.
+                  You've got the skills, now let's make sure you're ready to showcase them. Use our tools and resources to prepare for technical and behavioral interviews.
                 </p>
                 <button 
-                  onClick={() => handleNavigate('/resume-upload')} 
+                  onClick={() => handleNavigate('/interview-prep')} 
                   className="bg-gradient-to-r from-amber-400 to-amber-500 text-white px-6 py-3 rounded-lg shadow hover:shadow-lg transition-all duration-300 transform hover:-translate-y-1"
                 >
-                  Upload Resume
+                  Start Preparing Now
                 </button>
               </div>
             </div>
@@ -168,7 +131,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Conditional CTA/Footer Section */}
+      {/* Conditional Footer */}
       <div className="mt-auto">
         {!authToken ? (
           <section className="py-20 bg-gradient-to-br from-indigo-600 to-purple-700 text-white">
