@@ -60,9 +60,9 @@ export default function Home() {
               />
               <button 
                 className="bg-gradient-to-r from-amber-400 to-amber-500 px-8 text-white font-semibold hover:from-amber-500 hover:to-amber-600 transition-all duration-300 transform hover:scale-105"
-                onClick={() => navigate('/opportunities')}
+                onClick={() => navigate('/oppurtunities')}
               >
-                Search Opportunities
+                Search Oppurtunities
               </button>
             </div>
           </div>
