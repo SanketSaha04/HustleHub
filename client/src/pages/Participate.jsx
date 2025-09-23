@@ -1,5 +1,6 @@
 import React from "react";
 import { Zap, Briefcase, Users, Award, ArrowRight, Calendar, Star, Target } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export default function Participate() {
   const opportunities = [
@@ -9,7 +10,8 @@ export default function Participate() {
       emoji: "💼",
       icon: <Briefcase size={24} className="text-indigo-600" />,
       stats: "250+ active projects",
-      color: "from-blue-50 to-blue-100"
+      color: "from-blue-50 to-blue-100",
+      link: "/freelance-projects"
     },
     {
       title: "Hackathons",
@@ -17,7 +19,9 @@ export default function Participate() {
       emoji: "⚡",
       icon: <Zap size={24} className="text-indigo-600" />,
       stats: "12 upcoming events",
-      color: "from-purple-50 to-purple-100"
+      color: "from-purple-50 to-purple-100",
+      link: "/hackathons"
+
     },
     {
       title: "Mentorship Program",
@@ -25,7 +29,8 @@ export default function Participate() {
       emoji: "👥",
       icon: <Users size={24} className="text-indigo-600" />,
       stats: "80+ expert mentors",
-      color: "from-indigo-50 to-indigo-100"
+      color: "from-indigo-50 to-indigo-100",
+      link: "/mentorship-program"
     },
     {
       title: "Challenges",
@@ -33,7 +38,8 @@ export default function Participate() {
       emoji: "🏆",
       icon: <Award size={24} className="text-indigo-600" />,
       stats: "Weekly challenges",
-      color: "from-cyan-50 to-cyan-100"
+      color: "from-cyan-50 to-cyan-100",
+      link: "/challenges"
     }
   ];
 
@@ -74,7 +80,7 @@ export default function Participate() {
         {/* Cards Grid */}
         <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4 max-w-6xl mx-auto mb-16">
           {opportunities.map((item, index) => (
-            <div
+            <Link to={item.link}
               key={index}
               className="group relative bg-white rounded-2xl p-6 shadow-md hover:shadow-xl transition-all duration-300 border border-white hover:border-indigo-100"
             >
@@ -101,7 +107,7 @@ export default function Participate() {
                   Explore <ArrowRight size={16} className="ml-1" />
                 </button>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
 

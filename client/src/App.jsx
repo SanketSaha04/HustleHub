@@ -14,6 +14,10 @@ import Navbar from './components/Navbar';
 import AuthCallback from './components/AuthCallback';
 import { useAuth } from './context/AuthContext';
 import PortfolioBuilder from './pages/PortfolioBuilder'; 
+import FreelanceProjects from './pages/FreelanceProjects';
+import Hackathons from './pages/Hackathons';
+import MentorshipProgram from './pages/MentorshipProgram';
+import Challenges from './pages/Challenges';
 
 
 function App() {
@@ -53,6 +57,14 @@ function App() {
           <Route path="/interview-prep" element={<InterviewPrep/>} />
           <Route path="/admin/gigs" element={<Gigs />} />
           <Route path="/portfolio-builder" element={<PortfolioBuilder />} />
+          <Route path="/freelance-projects" element={<FreelanceProjects />} />
+          <Route path="/hackathons" element={<Hackathons />} />
+          <Route path="/mentorship-program" element={<MentorshipProgram />} />
+          <Route path="/challenges" element={<Challenges />} />
+
+
+
+          
                   
                 
         </Routes>
