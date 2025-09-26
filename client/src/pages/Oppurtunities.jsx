@@ -1,34 +1,29 @@
-
-
-
 import React, { useState, useEffect } from "react";
-import { FaLaptopCode, FaPenNib, FaChartLine, FaPalette, FaSearch, FaFilter, FaMapMarkerAlt, FaClock, FaMoneyBillWave, FaUserTie, FaRocket, FaMedal, FaBriefcase, FaCheckCircle } from "react-icons/fa";
+import { FaLaptopCode, FaPenNib, FaChartLine, FaPalette, FaSearch, FaBriefcase, FaCheckCircle, FaMoneyBillWave, FaClock, FaRocket } from "react-icons/fa";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from 'react-router-dom';
 
 const categoryIcons = {
-  "Development": <FaLaptopCode className="text-indigo-500 w-6 h-6" />,
   "Web Development": <FaLaptopCode className="text-indigo-500 w-6 h-6" />,
   "Mobile Development": <FaLaptopCode className="text-indigo-500 w-6 h-6" />,
   "Writing": <FaPenNib className="text-indigo-500 w-6 h-6" />,
   "Marketing": <FaChartLine className="text-indigo-500 w-6 h-6" />,
   "Design": <FaPalette className="text-indigo-500 w-6 h-6" />,
   "Data Science": <FaChartLine className="text-indigo-500 w-6 h-6" />,
-  "Video Editing": <FaPalette className="text-indigo-500 w-6 h-6" />,
-  "Photography": <FaPalette className="text-indigo-500 w-6 h-6" />,
   "Default": <FaBriefcase className="text-indigo-500 w-6 h-6" />
 };
 
-const categories = ["All", "Web Development", "Design", "Marketing", "Writing", "Mobile Development", "Data Science", "Video Editing", "Photography"];
-const budgetRanges = ["Any", "₹0-₹42,000", "₹42,000-₹1,67,000", "₹1,67,000-₹4,17,000", "₹4,17,000+"];
+const categories = ["All", "Web Development", "Design", "Marketing", "Writing", "Mobile Development", "Data Science"];
 
 export default function Opportunities() {
   const { authToken } = useAuth();
+  const navigate = useNavigate();
+
   const [opportunities, setOpportunities] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
   
   const [selectedCategory, setSelectedCategory] = useState("All");
-  const [selectedBudget, setSelectedBudget] = useState("Any");
   const [searchQuery, setSearchQuery] = useState("");
   const [appliedGigs, setAppliedGigs] = useState(new Set());
 
@@ -36,7 +31,6 @@ export default function Opportunities() {
     const fetchGigsAndContracts = async () => {
       setIsLoading(true);
       try {
-        // Fetch all available gigs
         const gigsResponse = await fetch('/api/gigs');
         if (!gigsResponse.ok) {
           throw new Error('Failed to fetch opportunities from the server.');
@@ -44,7 +38,6 @@ export default function Opportunities() {
         const gigsData = await gigsResponse.json();
         setOpportunities(gigsData);
 
-        // If user is logged in, fetch their existing applications
         if (authToken) {
           const contractsResponse = await fetch('/api/contracts/my-contracts', {
             headers: { 'Authorization': `Bearer ${authToken}` },
@@ -66,7 +59,7 @@ export default function Opportunities() {
 
   const handleApply = async (gigId) => {
     if (!authToken) {
-      alert('Please log in to apply for a job.');
+      navigate('/login');
       return;
     }
     try {
@@ -95,7 +88,7 @@ export default function Opportunities() {
     const matchesSearch = 
       opp.title.toLowerCase().includes(searchQuery.toLowerCase()) || 
       opp.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      opp.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()));
+      (opp.skills && opp.skills.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase())));
     
     return matchesCategory && matchesSearch;
   });
@@ -204,7 +197,7 @@ export default function Opportunities() {
               <div className="mt-auto pt-4">
                 {opp.isAccepted ? (
                   <button disabled className="w-full bg-gray-400 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center cursor-not-allowed">
-                    Accepted <FaCheckCircle className="ml-2" />
+                    Position Filled <FaCheckCircle className="ml-2" />
                   </button>
                 ) : appliedGigs.has(opp._id) ? (
                   <button disabled className="w-full bg-green-500 text-white px-4 py-3 rounded-lg font-medium flex items-center justify-center cursor-not-allowed">

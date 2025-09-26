@@ -8,6 +8,7 @@ const Gigs = () => {
     description: '',
     budget: '',
     duration: '',
+    tasks: '',
     attachment: null
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -161,6 +162,21 @@ const Gigs = () => {
               required
               className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               placeholder="Describe the gig in detail..."
+            />
+          </div>
+
+          <div>
+            <label htmlFor="tasks" className="block text-sm font-medium text-gray-700">
+              Tasks (comma separated)
+            </label>
+            <textarea
+              id="tasks"
+              name="tasks"
+              rows={3}
+              value={gigData.tasks}
+              onChange={handleChange}
+              className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm"
+              placeholder="e.g., Design the homepage, Create the login API, Set up the database"
             />
           </div>
 

@@ -25,6 +25,7 @@ import TermsAndConditions from './pages/TermsAndConditions';
 import Contracts from './pages/admin/Contracts';
 import Reports from './pages/admin/Reports';
 import Notifications from './pages/Notifications';
+import ActiveJob from './pages/ActiveJob';
 
 function App() {
   const { isLoading } = useAuth();
@@ -68,6 +69,7 @@ function App() {
           <Route path="/admin/contracts" element={<Contracts/>} /> {/* Add Contracts Route */}
           <Route path="/admin/reports" element={<Reports/>} /> {/* Add Reports Route */}
           <Route path="/notifications" element={<Notifications />} />
+          <Route path="/job/:contractId" element={<ActiveJob />} />
         </Routes>
       </main>
     </div>

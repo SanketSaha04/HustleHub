@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate, Link } from 'react-router-dom';
-import { Mail, Phone, MapPin, Edit, Briefcase, Star, DollarSign, Clock, CheckCircle, XCircle } from 'lucide-react';
+import { Mail, Edit, Clock, CheckCircle, FileText } from 'lucide-react';
 
 const MyProfile = () => {
   const { user, authToken, logout } = useAuth();
@@ -49,7 +49,6 @@ const MyProfile = () => {
   const filteredJobs = contracts.filter(c => c.status === jobFilter);
   const activeJobsCount = contracts.filter(c => c.status === 'Active').length;
   const completedJobsCount = contracts.filter(c => c.status === 'Completed').length;
-  const cancelledJobsCount = contracts.filter(c => c.status === 'Cancelled').length;
 
   return (
     <div className="min-h-screen bg-gray-100 p-4 sm:p-6 lg:p-8">
@@ -74,16 +73,29 @@ const MyProfile = () => {
           </button>
         </div>
 
-        {/* Profile Details & Reviews */}
+        {/* --- MODIFIED SECTION: Profile Details & Resume --- */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6 space-y-4">
             <h2 className="text-xl font-bold text-gray-800 border-b pb-2">Professional Details</h2>
             <div><strong>Skills:</strong> {user?.skills?.join(', ') || 'Not specified'}</div>
             <div><strong>Experience:</strong> {user?.experience || 'Not specified'}</div>
           </div>
-          <div className="bg-white rounded-xl shadow-md p-6 text-center">
-             <h2 className="text-xl font-bold text-gray-800 mb-2">Ratings & Reviews</h2>
-             <p className="text-gray-500 mt-4">Feature coming soon!</p>
+          
+          {/* --- NEW SECTION: My Resume --- */}
+          <div className="bg-white rounded-xl shadow-md p-6 flex flex-col items-center justify-center text-center">
+             <h2 className="text-xl font-bold text-gray-800 mb-4">My Resume</h2>
+             {user?.resumePath ? (
+                <a
+                    href={`http://localhost:5000${user.resumePath}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="bg-indigo-100 text-indigo-700 px-6 py-3 rounded-lg font-semibold hover:bg-indigo-200 flex items-center gap-2"
+                >
+                    <FileText size={18} /> View Resume
+                </a>
+             ) : (
+                <p className="text-gray-500">No resume uploaded.</p>
+             )}
           </div>
         </div>
 
@@ -91,22 +103,44 @@ const MyProfile = () => {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           <div className="lg:col-span-2 bg-white rounded-xl shadow-md p-6">
             <div className="flex justify-between items-center border-b pb-2 mb-4">
-              <h2 className="text-xl font-bold text-gray-800">Jobs Accepted</h2>
+              <h2 className="text-xl font-bold text-gray-800">My Jobs</h2>
               <div>
                 <button onClick={() => setJobFilter('Active')} className={`px-3 py-1 text-sm rounded-l-lg ${jobFilter === 'Active' ? 'bg-indigo-600 text-white' : 'bg-gray-200'}`}>Active</button>
                 <button onClick={() => setJobFilter('Completed')} className={`px-3 py-1 text-sm rounded-r-lg ${jobFilter === 'Completed' ? 'bg-indigo-600 text-white' : 'bg-gray-200'}`}>Completed</button>
               </div>
             </div>
             <div className="space-y-4">
-              {filteredJobs.length > 0 ? filteredJobs.map(contract => (
-                <div key={contract._id} className="p-3 border rounded-lg flex justify-between items-center">
-                  <div>
-                    <p className="font-semibold">{contract.gigId.title}</p>
-                    <p className="text-xs text-gray-500">Accepted: {new Date(contract.createdAt).toLocaleDateString()}</p>
-                  </div>
-                  <div className="font-bold text-indigo-600">₹{parseInt(contract.gigId.budget).toLocaleString('en-IN')}</div>
-                </div>
-              )) : <p className="text-gray-500 text-center py-4">No {jobFilter.toLowerCase()} jobs found.</p>}
+              {filteredJobs.length > 0 ? (
+                filteredJobs.map(contract => {
+                  if (jobFilter === 'Active') {
+                    return (
+                      <Link to={`/job/${contract._id}`} key={contract._id}>
+                        <div className="p-4 border rounded-lg flex justify-between items-center hover:bg-gray-50">
+                          <div>
+                            <p className="font-semibold">{contract.gigId.title}</p>
+                            <p className="text-xs text-gray-500">Accepted: {new Date(contract.createdAt).toLocaleDateString()}</p>
+                          </div>
+                          <span className="text-sm font-medium text-indigo-600">View & Submit Task →</span>
+                        </div>
+                      </Link>
+                    );
+                  }
+                  if (jobFilter === 'Completed') {
+                     return (
+                        <div key={contract._id} className="p-4 border rounded-lg flex justify-between items-center bg-green-50">
+                             <div>
+                                 <p className="font-semibold">{contract.gigId.title}</p>
+                                 <p className="text-xs text-gray-500">Completed on: {new Date(contract.updatedAt).toLocaleDateString()}</p>
+                             </div>
+                             <span className="text-sm font-medium text-green-700 flex items-center"><CheckCircle size={16} className="mr-2"/>Finished</span>
+                        </div>
+                     )
+                  }
+                  return null;
+                })
+              ) : (
+                <p className="text-gray-500 text-center py-4">No {jobFilter.toLowerCase()} jobs found.</p>
+              )}
             </div>
           </div>
           <div className="space-y-4">
@@ -121,12 +155,6 @@ const MyProfile = () => {
           </div>
         </div>
         
-        {/* Payment Section */}
-        <div className="bg-white rounded-xl shadow-md p-6">
-            <h2 className="text-xl font-bold text-gray-800 border-b pb-2 mb-4">Payment</h2>
-            <p className="text-gray-500 text-center py-8">Payment and transaction history feature is coming soon!</p>
-        </div>
-
         {/* Footer */}
         <footer className="text-center text-sm text-gray-500 py-4">
           <Link to="/privacy" className="hover:text-indigo-600 mx-2">Privacy Policy</Link> |
