@@ -29,12 +29,12 @@ const earningsStats = [
 
 const PIE_COLORS = ["#4F46E5", "#6366F1", "#818CF8"];
 
-// Safe Tailwind color maps
+// Color Maps
 const colorMap = {
-  indigo: { bgFrom: "from-indigo-100", bgTo: "to-indigo-400", text: "text-indigo-700", icon: "text-indigo-600" },
-  green: { bgFrom: "from-emerald-100", bgTo: "to-emerald-400", text: "text-emerald-700", icon: "text-emerald-600" },
-  yellow:{ bgFrom: "from-amber-100",   bgTo: "to-amber-400",   text: "text-amber-700",   icon: "text-amber-600" },
-  pink:  { bgFrom: "from-pink-100",    bgTo: "to-pink-400",    text: "text-pink-700",    icon: "text-pink-600" },
+  indigo: { bg: "bg-indigo-500", text: "text-indigo-500", shadow: "shadow-indigo-200" },
+  green: { bg: "bg-green-500", text: "text-green-500", shadow: "shadow-green-200" },
+  yellow: { bg: "bg-yellow-500", text: "text-yellow-500", shadow: "shadow-yellow-200" },
+  pink: { bg: "bg-pink-500", text: "text-pink-500", shadow: "shadow-pink-200" },
 };
 
 const stats = [
@@ -45,156 +45,157 @@ const stats = [
 ];
 
 const sidebarMenu = [
-  { label: "Dashboard", icon: HiUserGroup, path: "/admin" },
-  { label: "Gigs", icon: HiBriefcase, path: "/admin/gigs" },
-  { label: "Contracts", icon: HiCollection, path: "/admin/contracts" },
-  { label: "Reports", icon: HiCurrencyRupee, path: "/admin/reports" },
-];
-
-export default function AdminDashboard() {
-  const navigate = useNavigate();
-  const location = useLocation();
-
-  return (
-    <div className="min-h-screen flex bg-[radial-gradient(1200px_600px_at_-10%_-10%,#eef2ff,transparent),radial-gradient(800px_400px_at_110%_10%,#fffbeb,transparent)] dark:bg-gray-950">
-      {/* Sidebar */}
-      <aside className="hidden md:flex flex-col w-64 min-h-screen border-r bg-white/50 dark:bg-gray-900/50 backdrop-blur-xl shadow-xl dark:border-white/10">
-        <div className="p-6 border-b dark:border-white/10">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="w-7 h-7 rounded-xl bg-indigo-600 text-white flex items-center justify-center shadow-md">↗</span>
-            <span className="text-2xl tracking-tight">
-              <span className="text-[#1565c0]">Hustle</span>
-              <span className="text-[#ff6f00] ml-1">Hub</span>
-            </span>
-          </Link>
-        </div>
-
-        <nav className="flex-1 p-3">
-          <ul className="space-y-1">
-            {sidebarMenu.map((item) => {
-              const isActive = location.pathname === item.path;
-              const ItemIcon = item.icon;
-              return (
-                <li key={item.path}>
-                  <button
-                    onClick={() => navigate(item.path)}
-                    className={`w-full flex items-center gap-3 rounded-xl px-4 py-3 text-sm font-medium transition-all ${
-                      isActive ? "bg-indigo-100 text-indigo-800" : "text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800/50"
-                    }`}
-                  >
-                    <ItemIcon className={`w-5 h-5 ${isActive ? "text-indigo-700" : "text-indigo-500"}`} />
-                    <span>{item.label}</span>
-                    {isActive && <span className="ml-auto h-2 w-2 rounded-full bg-indigo-600 shadow-[0_0_0_3px_rgba(99,102,241,0.25)]" />}
-                  </button>
-                </li>
-              );
-            })}
-          </ul>
+    { label: "Dashboard", icon: HiUserGroup, path: "/admin/dashboard" },
+    { label: "Gigs", icon: HiBriefcase, path: "/admin/gigs" },
+    { label: "Contracts", icon: HiCollection, path: "/admin/contracts" },
+    { label: "Reports", icon: HiCurrencyRupee, path: "/admin/reports" },
+  ];
+  
+  export default function AdminDashboard() {
+    const navigate = useNavigate();
+    const location = useLocation();
+  
+    return (
+      <div className="min-h-screen flex bg-gray-50 dark:bg-gray-900">
+        {/* Sidebar */}
+        <aside className="hidden md:flex flex-col w-64 min-h-screen border-r bg-white dark:bg-gray-800 dark:border-gray-700 shadow-lg">
+        <div className="p-6 border-b dark:border-gray-700 flex items-center justify-between">
+            <Link to="/" className="flex items-center gap-2">
+              <span className="w-8 h-8 rounded-lg bg-indigo-600 text-white flex items-center justify-center shadow-md text-lg font-bold">H</span>
+              <span className="text-xl font-semibold tracking-tight text-gray-800 dark:text-white">
+                HustleHub
+              </span>
+            </Link>
+          </div>
+  
+          <nav className="flex-1 p-4 space-y-2">
+          {sidebarMenu.map((item) => {
+            const isActive = location.pathname === item.path;
+            const ItemIcon = item.icon;
+            return (
+              <button
+                key={item.path}
+                onClick={() => navigate(item.path)}
+                className={`w-full flex items-center gap-3 rounded-lg px-4 py-2 text-sm font-medium transition-all ${
+                  isActive 
+                    ? "bg-indigo-600 text-white shadow-md" 
+                    : "text-gray-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                <ItemIcon className={`w-5 h-5 ${isActive ? "text-white" : "text-gray-400"}`} />
+                <span>{item.label}</span>
+              </button>
+            );
+          })}
         </nav>
 
-        <div className="p-4 border-t flex items-center justify-between dark:border-white/10">
+        <div className="p-4 border-t dark:border-gray-700">
           <ThemeToggle />
         </div>
       </aside>
-
-      {/* Main */}
-      <section className="flex-1 min-h-screen flex flex-col">
-        {/* Topbar */}
-        <header className="flex items-center justify-between px-6 lg:px-10 py-5 bg-white/60 dark:bg-gray-900/60 backdrop-blur-xl border-b dark:border-white/10 sticky top-0 z-10">
-          <h1 className="text-2xl lg:text-3xl font-bold tracking-tight text-gray-900 dark:text-gray-100">Admin Dashboard</h1>
-          <div className="flex gap-3 items-center">
-            <input
-              type="text"
-              placeholder="Search..."
-              className="bg-gray-100 dark:bg-gray-800 dark:text-gray-100 rounded-full px-4 py-2 outline-none focus:ring-2 focus:ring-indigo-200"
-            />
-            <button className="relative">
-              <span className="absolute -top-2 -right-2 bg-pink-500 text-white rounded-full text-[10px] px-1.5">3</span>
-              <svg className="w-6 h-6 text-indigo-600" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 00-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
-              </svg>
-            </button>
-            <div className="flex items-center gap-2">
-              <img src="https://i.pravatar.cc/32" alt="Avatar" className="w-8 h-8 rounded-full object-cover border" />
-              <span className="text-gray-800 dark:text-gray-200 font-medium">Admin</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Stat Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 p-6 lg:p-8">
-          {stats.map((item) => {
-            const palette = colorMap[item.color];
-            const Icon = item.icon;
-            return (
-              <div key={item.label} className="bg-white/70 dark:bg-gray-900/60 backdrop-blur-md rounded-2xl shadow-md hover:shadow-xl transition-all px-6 py-5 flex items-center gap-4 border border-white/40 dark:border-white/10">
-                <div className={`p-3 rounded-xl bg-gradient-to-tr ${palette.bgFrom} ${palette.bgTo} shadow`}>
-                  <Icon className={`w-6 h-6 ${palette.icon}`} />
+        {/* Main */}
+        <section className="flex-1 min-h-screen flex flex-col">
+          {/* Topbar */}
+          <header className="flex items-center justify-between px-6 lg:px-10 py-4 bg-white dark:bg-gray-800 border-b dark:border-gray-200 dark:border-gray-700 sticky top-0 z-10">
+            <h1 className="text-2xl font-bold text-gray-800 dark:text-white">Admin Dashboard</h1>
+            <div className="flex gap-4 items-center">
+              <input
+                type="text"
+                placeholder="Search..."
+                className="bg-gray-100 dark:bg-gray-700 dark:text-gray-100 rounded-lg px-4 py-2 outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+              />
+              <button className="relative p-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-700">
+                <span className="absolute -top-1 -right-1 bg-pink-500 text-white rounded-full text-xs px-1.5 py-0.5">3</span>
+                <svg className="w-6 h-6 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 00-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path>
+                </svg>
+              </button>
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-indigo-600 text-white flex items-center justify-center font-bold text-lg">
+                  A
                 </div>
                 <div>
-                  <p className="text-xs uppercase tracking-wide text-gray-500 dark:text-gray-400">{item.label}</p>
-                  <h3 className={`text-2xl lg:text-3xl font-extrabold ${palette.text}`}>{item.value}</h3>
+                  <p className="font-semibold text-gray-800 dark:text-white">Admin</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">Superuser</p>
                 </div>
               </div>
-            );
-          })}
-        </div>
-
-        {/* Charts */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 px-6 lg:px-8">
-          <div className="bg-white/70 dark:bg-gray-900/60 rounded-2xl shadow-md p-6 backdrop-blur-xl border border-white/40 dark:border-white/10">
-            <h2 className="text-gray-700 dark:text-gray-200 font-semibold mb-4">User Distribution</h2>
-            <ResponsiveContainer width="100%" height={300}>
-              <PieChart>
-                <Pie data={userStats} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={85} label>
-                  {userStats.map((_, idx) => (
-                    <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
-                  ))}
-                </Pie>
-                <Legend />
-                <Tooltip />
-              </PieChart>
-            </ResponsiveContainer>
+            </div>
+          </header>
+  
+          {/* Stat Cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 p-6 lg:p-8">
+            {stats.map((item) => {
+              const palette = colorMap[item.color];
+              const Icon = item.icon;
+              return (
+                <div key={item.label} className={`bg-white dark:bg-gray-800 rounded-xl shadow-lg hover:shadow-2xl transition-all p-6 flex items-center gap-5 border-l-4 ${palette.bg}`}>
+                  <div className={`p-3 rounded-full bg-white shadow-inner`}>
+                    <Icon className={`w-7 h-7 ${palette.text}`} />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">{item.label}</p>
+                    <h3 className={`text-3xl font-bold text-gray-800 dark:text-white`}>{item.value}</h3>
+                  </div>
+                </div>
+              );
+            })}
           </div>
-
-          <div className="bg-white/70 dark:bg-gray-900/60 rounded-2xl shadow-md p-6 backdrop-blur-xl border border-white/40 dark:border-white/10">
-            <h2 className="text-gray-700 dark:text-gray-200 font-semibold mb-4">Gigs Overview</h2>
+  
+          {/* Charts */}
+          <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 px-6 lg:px-8">
+          <div className="lg:col-span-2 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+              <h2 className="text-gray-700 dark:text-gray-200 font-semibold mb-4">User Distribution</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie data={userStats} dataKey="value" nameKey="label" cx="50%" cy="50%" outerRadius={100} labelLine={false}
+                    label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}>
+                    {userStats.map((_, idx) => (
+                      <Cell key={idx} fill={PIE_COLORS[idx % PIE_COLORS.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+  
+            <div className="lg:col-span-3 bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+              <h2 className="text-gray-700 dark:text-gray-200 font-semibold mb-4">Gigs Overview</h2>
+              <ResponsiveContainer width="100%" height={300}>
+                <BarChart data={gigsStats} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                  <XAxis dataKey="label" />
+                  <YAxis />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#4F46E5" radius={[10, 10, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </div>
+  
+          {/* Earnings */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-6 mx-6 lg:mx-8">
+            <h2 className="text-gray-700 dark:text-gray-200 font-semibold mb-4">Monthly Earnings</h2>
             <ResponsiveContainer width="100%" height={300}>
-              <BarChart data={gigsStats}>
-                <XAxis dataKey="label" />
+              <BarChart data={earningsStats} margin={{ top: 20, right: 30, left: 0, bottom: 5 }}>
+                <XAxis dataKey="name" />
                 <YAxis />
                 <Tooltip />
-                <Bar dataKey="value" fill="#4F46E5" radius={[8, 8, 0, 0]} />
+                <Bar dataKey="amount" fill="#10B981" radius={[10, 10, 0, 0]} />
               </BarChart>
             </ResponsiveContainer>
           </div>
-        </div>
-
-        {/* Earnings */}
-        <div className="bg-white/70 dark:bg-gray-900/60 rounded-2xl shadow-md p-6 backdrop-blur-xl mt-6 mx-6 lg:mx-8 border border-white/40 dark:border-white/10">
-          <h2 className="text-gray-700 dark:text-gray-200 font-semibold mb-4">Monthly Earnings</h2>
-          <ResponsiveContainer width="100%" height={300}>
-            <BarChart data={earningsStats}>
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="amount" fill="#10B981" radius={[8, 8, 0, 0]} />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Activity */}
-        <div className="bg-white/70 dark:bg-gray-900/60 rounded-2xl shadow-md p-6 backdrop-blur-xl mt-6 mx-6 lg:mx-8 mb-10 border border-white/40 dark:border-white/10">
-          <h2 className="text-gray-700 dark:text-gray-200 font-semibold mb-4">Recent Activities</h2>
-          <ul className="space-y-2 text-gray-700 dark:text-gray-300 text-sm">
-            <li><span className="font-semibold text-indigo-600">Worker John</span> applied for Gig #12</li>
-            <li><span className="font-semibold text-emerald-600">Gig #15</span> completed by Worker Sarah</li>
-            <li>New contract started for <span className="text-pink-600 font-semibold">Client XYZ</span></li>
-            <li><span className="font-semibold text-indigo-600">Worker Mike</span> registered</li>
-            <li>Admin changed gig status of <span className="font-semibold">#10</span> to <span className="text-emerald-600 font-semibold">Completed</span></li>
-          </ul>
-        </div>
-      </section>
-    </div>
-  );
-}
+  
+          {/* Activity */}
+          <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mt-6 mx-6 lg:mx-8 mb-10">
+            <h2 className="text-gray-700 dark:text-gray-200 font-semibold mb-4">Recent Activities</h2>
+            <ul className="space-y-3 text-gray-700 dark:text-gray-300 text-sm">
+              <li className="flex items-center gap-3"><span className="font-semibold text-indigo-600">Worker John</span> applied for Gig #12 <span className="text-xs text-gray-400 ml-auto">2 hours ago</span></li>
+              <li className="flex items-center gap-3"><span className="font-semibold text-green-600">Gig #15</span> completed by Worker Sarah <span className="text-xs text-gray-400 ml-auto">5 hours ago</span></li>
+              <li className="flex items-center gap-3">New contract started for <span className="text-pink-600 font-semibold">Client XYZ</span> <span className="text-xs text-gray-400 ml-auto">1 day ago</span></li>
+              <li className="flex items-center gap-3"><span className="font-semibold text-indigo-600">Worker Mike</span> registered <span className="text-xs text-gray-400 ml-auto">2 days ago</span></li>
+              <li className="flex items-center gap-3">Admin changed gig status of <span className="font-semibold">#10</span> to <span className="text-green-600 font-semibold">Completed</span> <span className="text-xs text-gray-400 ml-auto">3 days ago</span></li>
+            </ul>
+          </div>
+        </section>
+      </div>
+    );
+  }

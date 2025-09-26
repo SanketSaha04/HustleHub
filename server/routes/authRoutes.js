@@ -16,7 +16,8 @@ const createToken = (user) => {
     const payload = {
         id: user._id, name: user.name, email: user.email,
         jobTitle: user.jobTitle, skills: user.skills,
-        experience: user.experience, resumePath: user.resumePath
+        experience: user.experience, resumePath: user.resumePath,
+        role: user.role // Include role in token
     };
     return jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "1h" });
 };
@@ -40,8 +41,12 @@ router.post("/register", async (req, res) => {
     const existingUser = await User.findOne({ email });
     if (existingUser) return res.status(400).json({ message: "User already exists" });
     
+    // Check if this is the first user
+    const userCount = await User.countDocuments();
+    const role = userCount === 0 ? 'admin' : 'user';
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    const newUser = new User({ name, email, password: hashedPassword });
+    const newUser = new User({ name, email, password: hashedPassword, role });
     await newUser.save();
 
     const token = createToken(newUser);

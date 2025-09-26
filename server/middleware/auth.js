@@ -17,3 +17,23 @@ export const auth = (req, res, next) => {
         res.status(401).json({ message: 'Authentication invalid' });
     }
 };
+// import jwt from 'jsonwebtoken';
+
+// export const auth = (req, res, next) => {
+//     const authHeader = req.header('Authorization');
+//     if (!authHeader) {
+//         return res.status(401).json({ message: 'No token, authorization denied.' });
+//     }
+
+//     try {
+//         const token = authHeader.replace('Bearer ', '');
+//         const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+//         // Attach the full decoded payload to the request
+//         req.user = decoded; 
+
+//         next();
+//     } catch (error) {
+//         res.status(401).json({ message: 'Token is not valid.' });
+//     }
+// };

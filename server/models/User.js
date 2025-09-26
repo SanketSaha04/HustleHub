@@ -8,7 +8,12 @@ const userSchema = new mongoose.Schema({
     jobTitle: { type: String },
     skills: { type: [String] },
     experience: { type: String },
-    resumePath: { type: String }
+    resumePath: { type: String },
+    role: {
+        type: String,
+        enum: ['user', 'admin'],
+        default: 'user'
+    }
 });
 
 const User = mongoose.model("User", userSchema);
