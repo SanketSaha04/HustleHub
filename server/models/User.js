@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const userSchema = new mongoose.Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String }, // Not required for Google OAuth users
+    password: { type: String },
     googleId: { type: String },
     jobTitle: { type: String },
     skills: { type: [String] },
@@ -17,5 +17,4 @@ const userSchema = new mongoose.Schema({
 });
 
 const User = mongoose.model("User", userSchema);
-
 export default User;

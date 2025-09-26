@@ -8,6 +8,24 @@ import { auth } from '../middleware/auth.js';
 const router = express.Router();
 
 // --- Main Admin Routes ---
+// Add a new route for the admin to mark a contract as complete
+router.patch('/contracts/:id/complete', auth, async (req, res) => {
+    try {
+        const contract = await Contract.findById(req.params.id);
+        if (!contract) {
+            return res.status(404).json({ message: 'Contract not found.' });
+        }
+        
+        contract.status = 'Completed';
+        await contract.save();
+        
+        // You could create a notification for the user here
+        
+        res.status(200).json({ message: 'Contract has been marked as completed.' });
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error', error: error.message });
+    }
+});
 
 // GET /api/admin-api/contracts - Fetch all contracts for the admin view
 router.get('/contracts', auth, async (req, res) => {

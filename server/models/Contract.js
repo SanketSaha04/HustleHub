@@ -16,8 +16,13 @@ const contractSchema = new mongoose.Schema({
     enum: ['Pending', 'Active', 'Completed', 'Cancelled'],
     default: 'Pending'
   },
+  submission: {
+    filePath: String,
+    notes: String,
+    link: String, // Add this line for the submission link
+    submittedAt: Date
+  }
 }, { timestamps: true });
 
 const Contract = mongoose.model('Contract', contractSchema);
-
 export default Contract;

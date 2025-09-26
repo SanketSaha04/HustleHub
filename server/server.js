@@ -9,6 +9,8 @@ import mongoose from "mongoose";
 import path from 'path';
 import fs from 'fs';
 import { fileURLToPath } from 'url';
+import taskRoutes from './routes/taskRoutes.js';
+
 
 // Import configurations and routes
 import passportConfig from './config/passport.js';
@@ -34,6 +36,7 @@ app.use(morgan("dev"));
 app.use(express.json());
 const DEV_ORIGIN = process.env.CLIENT_ORIGIN || "http://localhost:5173";
 app.use(cors({ origin: DEV_ORIGIN, credentials: true }));
+app.use('/api/tasks', taskRoutes);
 
 // ES module equivalent of __dirname
 const __filename = fileURLToPath(import.meta.url);
@@ -69,6 +72,7 @@ app.use("/api/gigs", gigRoutes);
 app.use('/api/contracts', contractRoutes);
 app.use('/api/admin-api', adminApiRoutes);
 app.use('/api/notifications', notificationRoutes);
+
 
 // --- Database Connection and Server Start ---
 const PORT = process.env.PORT || 5000;

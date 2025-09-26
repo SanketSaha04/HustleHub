@@ -45,4 +45,21 @@ router.get('/my-contracts', auth, async (req, res) => {
     }
 });
 
+// --- NEW ROUTE ---
+// GET /api/contracts/:id - Fetch a single contract by its ID
+router.get('/:id', auth, async (req, res) => {
+    try {
+        const contract = await Contract.findById(req.params.id)
+            .populate('gigId'); // Populate the gig details, including tasks
+
+        if (!contract || contract.userId.toString() !== req.user.id) {
+            return res.status(404).json({ message: 'Contract not found' });
+        }
+
+        res.status(200).json(contract);
+    } catch (error) {
+        res.status(500).json({ message: 'Server Error' });
+    }
+});
+
 export default router;
