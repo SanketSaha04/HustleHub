@@ -1,9 +1,6 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-
 
 const Gigs = () => {
-    const navigate = useNavigate();
   const [gigData, setGigData] = useState({
     title: '',
     category: '',
@@ -13,54 +10,59 @@ const Gigs = () => {
     duration: '',
     attachment: null
   });
-
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [message, setMessage] = useState('');
+  const [error, setError] = useState('');
 
   const categories = [
-    'Web Development',
-    'Design',
-    'Marketing',
-    'Writing',
-    'Mobile Development',
-    'Data Science',
-    'Video Editing',
-    'Photography'
+    'Web Development', 'Design', 'Marketing', 'Writing', 
+    'Mobile Development', 'Data Science', 'Video Editing', 'Photography'
   ];
-
-  const durations = [
-    '1 week',
-    '2 weeks',
-    '1 month',
-    '3+ months'
-  ];
+  const durations = ['1 week', '2 weeks', '1 month', '3+ months'];
 
   const handleChange = (e) => {
     const { name, value, files } = e.target;
-    setGigData(prev => ({
-      ...prev,
-      [name]: files ? files[0] : value
-    }));
+    setGigData(prev => ({ ...prev, [name]: files ? files[0] : value }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
-    
-    // Simulate API call
-    setTimeout(() => {
-      console.log('Gig posted:', gigData);
-      setIsSubmitting(false);
-      alert('Gig posted successfully!');
-      setGigData({
-        title: '',
-        category: '',
-        skills: '',
-        description: '',
-        budget: '',
-        duration: '',
-        attachment: null
+    setMessage('');
+    setError('');
+
+    const formData = new FormData();
+    Object.keys(gigData).forEach(key => {
+      if (gigData[key] !== null) {
+        formData.append(key, gigData[key]);
+      }
+    });
+
+    try {
+      const adminToken = localStorage.getItem('adminToken');
+      const response = await fetch('/api/gigs', {
+        method: 'POST',
+        headers: { 
+          'Authorization': `Bearer ${adminToken}` 
+        },
+        body: formData,
       });
-    }, 1500);
+
+      if (response.ok) {
+        setMessage('Gig posted successfully!');
+        setGigData({ title: '', category: '', skills: '', description: '', budget: '', duration: '', attachment: null });
+        // Clear file input visually if needed
+        const fileInput = document.getElementById('attachment');
+        if(fileInput) fileInput.value = '';
+      } else {
+        const errData = await response.json();
+        setError(errData.message || 'Failed to post gig.');
+      }
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
@@ -86,6 +88,9 @@ const Gigs = () => {
             Fill out the form to create your freelance opportunity
           </p>
         </div>
+        
+        {message && <p className="text-green-600 bg-green-100 p-3 rounded-lg text-center mb-4">{message}</p>}
+        {error && <p className="text-red-600 bg-red-100 p-3 rounded-lg text-center mb-4">{error}</p>}
 
         <form onSubmit={handleSubmit} className="space-y-6">
           {/* Gig Title */}
@@ -163,11 +168,11 @@ const Gigs = () => {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <label htmlFor="budget" className="block text-sm font-medium text-gray-700">
-                Budget (USD) *
+                Budget (INR) *
               </label>
               <div className="mt-1 relative rounded-md shadow-sm">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-gray-500 sm:text-sm">$</span>
+                  <span className="text-gray-500 sm:text-sm">₹</span>
                 </div>
                 <input
                   type="number"

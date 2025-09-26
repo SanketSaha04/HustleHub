@@ -16,6 +16,11 @@ import authRoutes from './routes/authRoutes.js';
 import portfolioRoutes from './routes/portfolioRoutes.js';
 import interviewRoutes from './routes/interviewRoutes.js';
 import hackathonRoutes from './routes/hackathonRoutes.js';
+import adminRoutes from './routes/adminRoutes.js'; // Import admin routes
+import gigRoutes from './routes/gigRoutes.js';
+import contractRoutes from './routes/contractRoutes.js'; 
+import adminApiRoutes from './routes/adminApiRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
 
 // Load environment variables
 dotenv.config();
@@ -59,6 +64,11 @@ app.use("/api", authRoutes); // For /api/user/resume
 app.use("/api/portfolio", portfolioRoutes);
 app.use("/api", interviewRoutes);
 app.use("/api/hackathons", hackathonRoutes);
+app.use("/api/admin", adminRoutes); // Add admin routes
+app.use("/api/gigs", gigRoutes); 
+app.use('/api/contracts', contractRoutes);
+app.use('/api/admin-api', adminApiRoutes);
+app.use('/api/notifications', notificationRoutes);
 
 // --- Database Connection and Server Start ---
 const PORT = process.env.PORT || 5000;
